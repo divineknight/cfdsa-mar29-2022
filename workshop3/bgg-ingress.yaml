@@ -10,9 +10,9 @@ metadata:
 spec:
   ingressClassName : nginx
   rules:
-  - host: 
+  - host: bgg-144.126.241.80.nip.io
     http:
-      paths:
+      paths: 
       - path: /v1
         pathType: Prefix
         backend:
