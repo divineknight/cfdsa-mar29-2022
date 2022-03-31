@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: bggdb-configmap
+  namespace: bggns  
+  labels:
+    name: bggdb-configmap
+data:
+  BGG_DB_USER: root
+  BGG_DB_HOST: bggdb-service.bggns.svc.cluster.local
