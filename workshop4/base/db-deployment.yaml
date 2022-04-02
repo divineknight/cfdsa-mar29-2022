@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: db-deployment
+  labels:
+    name: db-deployment
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      name: db-pod
+      tier: db
+  template:   
+    metadata:
+      name: db-pod
+      labels:
+        name: db-pod
+        tier: db
+    spec:
+      volumes: 
+      - name: db-vol
+        persistentVolumeClaim:
+          claimName: data-pvc
+      containers:
+      - name: db-container
+        image: library/mysql:8.0.28
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3306
+        volumeMounts: 
+        - name: db-vol
+          mountPath: /var/lib/mysql
+        envFrom:
+        - secretRef:
+            name: db-secret
+        - configMapRef:
+            name: db-configmap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+  labels:
+    name: db-service
+spec:
+  type: ClusterIP
+  selector:
+    name: db-pod
+  ports:
+  - port: 3306
+    targetPort: 3306
+

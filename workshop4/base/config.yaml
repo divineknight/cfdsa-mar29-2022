@@ -1,0 +1,34 @@
+---
+apiVersion: v1
+kind: Secret
+metadata: 
+  name: db-secret 
+  labels:
+    name: db-secret
+data:
+  MYSQL_ROOT_PASSWORD: cGFzc3dvcmQ=
+  MYSQL_PASSWORD: cGFzc3dvcmQ=
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: db-configmap
+  labels:
+    name: db-configmap
+data:
+  MYSQL_DATABASE: wordpress
+  MYSQL_USER: wordpress_user
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: 
+  name: app-configmap
+  labels:
+    name: app-configmap
+data:
+  WORDPRESS_DB_USER: wordpress_user
+  WORDPRESS_DB_HOST: db-service.mywork.svc.cluster.local
+  WORDPRESS_DB_NAME: wordpress
+
+
+  

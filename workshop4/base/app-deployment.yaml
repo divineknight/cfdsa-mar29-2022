@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: workpress-client-1-deployment
+  labels:
+    name: workpress-client-1-deployment
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      name: workpress-client-1-pod
+  strategy:
+    rollingUpdate:
+      maxSurge : 1
+      maxUnavailable: 0
+  template:   
+    metadata:
+      name: workpress-client-1-pod
+      labels:
+        name: workpress-client-1-pod
+        tier: app
+    spec:
+      containers:
+      - name: workpress-client-1-container
+        image: library/wordpress:5.9.2-apache
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests: 
+            cpu: 100m
+            memory: 128Mi
+        ports:
+        - containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: app-configmap
+        env:
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: MYSQL_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: workpress-client-1-service
+  labels:
+    name: workpress-client-1-service
+spec:
+  type: ClusterIP
+  selector:
+    name: workpress-client-1-pod
+  ports:
+  - port: 8080
+    targetPort: 80

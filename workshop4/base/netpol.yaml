@@ -1,0 +1,67 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: 
+  name: wp-netpol-deny-all
+  labels:
+    name: wp-netpol-deny-all
+spec:
+  podSelector:
+    matchLabels:
+      name: workpress-client-1-pod
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: 
+  name: wp-netpol-app
+  labels:
+    name: wp-netpol-app
+spec:
+  podSelector:
+    matchLabels:
+      tier: app
+      name: workpress-client-1-pod
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+      podSelector: 
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx
+  egress:
+  - to:
+    - podSelector: 
+        matchLabels:
+          name: db-pod
+          tier: db
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: 
+  name: wp-netpol-db
+  labels:
+    name: wp-netpol-db
+spec:
+  podSelector: 
+    matchLabels:
+      name: db-pod
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from: 
+    - podSelector:
+        matchLabels:
+          name: workpress-client-1-pod
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          name: workpress-client-1-pod
